@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-
+import { Link } from "react-router-dom";
 const ProductList = () => {
   const [products, setProducts] = useState([]);
+
   useEffect(() => {
     getProducts();
   }, []);
@@ -11,31 +12,64 @@ const ProductList = () => {
     result = await result.json();
     setProducts(result);
   };
+
+  const deleteProduct = async (id) => {
+    let result = await fetch(`http://localhost:5001/delete/${id}`, {
+      method: "Delete",
+    });
+    if (result) {
+      alert("Data Deleted");
+      getProducts();
+    }
+  };
+
+  const searchHandle = async (event) => {
+    let key = event.target.value;
+    if (key) {
+      let result = await fetch(`http://localhost:5001/search/${key}`);
+      result = await result.json();
+      if (result) {
+        setProducts(result);
+      }
+    } else {
+      getProducts();
+    }
+  };
+
   return (
     <div className="product-list">
-      <h1>Product List</h1>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">Sr. No.</th>
-            <th scope="col">Name</th>
-            <th scope="col">Price</th>
-            <th scope="col">Category</th>
-            <th scope="col">Company</th>
-          </tr>
-        </thead>
-        <tbody className="tablehead">
-          {products.map((item, index) => (
-            <tr>
-              <th scope="row">{index + 1}</th>
-              <td>{item.name}</td>
-              <td>{item.price}</td>
-              <td>{item.category}</td>
-              <td>{item.company}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h3>Product List</h3>
+      <input
+        className="searchinput"
+        type="text"
+        placeholder="Search Product"
+        onChange={searchHandle}
+      />
+      <ul>
+        <li>Sr. No.</li>
+        <li>Name</li>
+        <li>Price</li>
+        <li>Category</li>
+        <li>Company</li>
+        <li>Operation</li>
+      </ul>
+      {products.length > 0 ? (
+        products.map((item, index) => (
+          <ul key={item._id}>
+            <li>{index + 1}</li>
+            <li>{item.name}</li>
+            <li>{item.price}</li>
+            <li>{item.category}</li>
+            <li>{item.company}</li>
+            <li>
+              <button onClick={() => deleteProduct(item._id)}>Delete</button>
+              <Link to={"/update/" + item._id}>Update</Link>
+            </li>
+          </ul>
+        ))
+      ) : (
+        <h1>No Result Found</h1>
+      )}
     </div>
   );
 };
