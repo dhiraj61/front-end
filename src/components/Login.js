@@ -20,8 +20,8 @@ const Login = () => {
       },
     });
     result = await result.json();
-    localStorage.setItem("user", result);
     if (result.name) {
+      localStorage.setItem("user", JSON.stringify(result));
       navigate("/");
     } else {
       alert("Enter Valid Details");

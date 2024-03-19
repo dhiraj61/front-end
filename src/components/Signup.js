@@ -23,6 +23,7 @@ const Signup = () => {
     });
     result = await result.json();
     localStorage.setItem("user", JSON.stringify(result));
+    navigate("/");
   };
 
   return (
